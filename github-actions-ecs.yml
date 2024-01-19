@@ -1,0 +1,38 @@
+name: Push-to-ECS
+
+#Trigger deployment only on push to main branch
+on:
+  push:
+    branches:
+      --main
+
+jobs:
+  deploy:
+    name: Deploy to ECS on master branch push
+    runs-on: ubuntu-latest
+
+    steps:
+      --name: Checkout the files
+        uses: actions/checkout@v2
+
+       --name: Deploy to Server 1
+         uses: easingthemes/ssh-deploy@main
+         env:
+           SSH_PRIVATE_KEY: ${{ secrets.LAM_TEST }}
+           REMOTE_HOST: ${{ secrets.HOST_DNS }}
+           REMOTE_USER: ${{ secrets.USERNAME }}
+           TARGET: ${{ secrets.TARGET_DIR }}
+
+         --name: Executing remote ssh commands using ssh key
+           uses: appleboy/ssh-action@master
+           with:
+           host: ${{ secrets.HOST_DNS }}
+           username: ${{ secrets.USERNNAME }}
+
+           script: |
+             sudo apt-get update -y
+             sudo apt-get install -y apache2
+             sudo apt-get start -y apache2
+             sudo apt-get enable -y apache2
+             cd home
+             sudo mv * /var/www/html
